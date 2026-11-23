@@ -29,7 +29,7 @@ return function(props)
 		}),
 
 		New("Frame", {
-			BackgroundTransparency = 0.45,
+			BackgroundTransparency = 0.35,
 			Size = UDim2.fromScale(1, 1),
 			Name = "Background",
 			ThemeTag = {
@@ -43,7 +43,7 @@ return function(props)
 
 		New("Frame", {
 			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-			BackgroundTransparency = 0.4,
+			BackgroundTransparency = 0.78,
 			Size = UDim2.fromScale(1, 1),
 		}, {
 			New("UICorner", {

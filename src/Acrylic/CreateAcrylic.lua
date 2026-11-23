@@ -13,7 +13,7 @@ local function createAcrylic()
 		CanTouch = false,
 		Locked = true,
 		CastShadow = false,
-		Transparency = 0.98,
+		Transparency = 1,
 	}, {
 		Creator.New("SpecialMesh", {
 			MeshType = Enum.MeshType.Brick,

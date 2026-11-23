@@ -1,67 +1,57 @@
+local Lighting = game:GetService("Lighting")
+
 local Acrylic = {
 	AcrylicBlur = require(script.AcrylicBlur),
 	CreateAcrylic = require(script.CreateAcrylic),
 	AcrylicPaint = require(script.AcrylicPaint),
+	BlurSize = 20,
 }
 
-local started = false
-local baseEffect
-local depthOfFieldDefaults = {}
+local blurEffect
+local savedBlurs = {}
+
+local function rememberBlurs()
+	for _, child in ipairs(Lighting:GetChildren()) do
+		if child:IsA("BlurEffect") and child ~= blurEffect and savedBlurs[child] == nil then
+			savedBlurs[child] = child.Enabled
+		end
+	end
+end
 
 function Acrylic.Enable()
-	for effect in pairs(depthOfFieldDefaults) do
+	if not blurEffect then
+		return
+	end
+	rememberBlurs()
+	for effect in pairs(savedBlurs) do
 		if effect.Parent then
 			effect.Enabled = false
 		end
 	end
-	if baseEffect then
-		baseEffect.Parent = game:GetService("Lighting")
-	end
+	blurEffect.Size = Acrylic.BlurSize
+	blurEffect.Enabled = true
+	blurEffect.Parent = Lighting
 end
 
 function Acrylic.Disable()
-	for effect, wasEnabled in pairs(depthOfFieldDefaults) do
+	if blurEffect then
+		blurEffect.Enabled = false
+		blurEffect.Parent = nil
+	end
+	for effect, wasEnabled in pairs(savedBlurs) do
 		if effect.Parent then
 			effect.Enabled = wasEnabled
 		end
 	end
-	if baseEffect then
-		baseEffect.Parent = nil
-	end
 end
 
 function Acrylic.init()
-	if started then
-		Acrylic.Enable()
-		return
+	if not blurEffect then
+		blurEffect = Instance.new("BlurEffect")
+		blurEffect.Name = "FluentAcrylic"
+		blurEffect.Size = Acrylic.BlurSize
+		blurEffect.Enabled = false
 	end
-	started = true
-
-	baseEffect = Instance.new("DepthOfFieldEffect")
-	baseEffect.Name = "FluentBlur"
-	baseEffect.FarIntensity = 0
-	baseEffect.InFocusRadius = 0.1
-	baseEffect.NearIntensity = 1
-
-	local function registerDefaults()
-		local function register(object)
-			if object:IsA("DepthOfFieldEffect") and object ~= baseEffect then
-				depthOfFieldDefaults[object] = object.Enabled
-			end
-		end
-
-		for _, child in pairs(game:GetService("Lighting"):GetChildren()) do
-			register(child)
-		end
-
-		if game:GetService("Workspace").CurrentCamera then
-			for _, child in pairs(game:GetService("Workspace").CurrentCamera:GetChildren()) do
-				register(child)
-			end
-		end
-	end
-
-	registerDefaults()
 	Acrylic.Enable()
 end
 

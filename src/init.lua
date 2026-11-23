@@ -132,10 +132,11 @@ function Library:CreateWindow(Config)
 	end
 
 	Library.MinimizeKey = Config.MinimizeKey or Enum.KeyCode.LeftControl
-	Library.UseAcrylic = Config.Acrylic or false
-	Library.Acrylic = Config.Acrylic or false
+	local useAcrylic = Config.Acrylic ~= false
+	Library.UseAcrylic = useAcrylic
+	Library.Acrylic = useAcrylic
 	Library.Theme = Config.Theme or "Dark"
-	if Config.Acrylic then
+	if useAcrylic then
 		Acrylic.init()
 	end
 
@@ -180,7 +181,9 @@ function Library:ToggleAcrylic(Value)
 	if Library.Window then
 		if Library.UseAcrylic then
 			Library.Acrylic = Value
-			Library.Window.AcrylicPaint.Model.Transparency = Value and 0.98 or 1
+			if Library.Window.AcrylicPaint.Model then
+				Library.Window.AcrylicPaint.Model.Transparency = Value and 0.98 or 1
+			end
 			if Value then
 				Acrylic.Enable()
 			else
